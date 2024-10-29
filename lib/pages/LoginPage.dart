@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'ClothingList.dart';
+import '../handlers/UserProvider.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_application_2/provider/UserProvider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

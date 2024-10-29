@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'pages/LoginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'provider/UserProvider.dart';
+import 'handlers/UserProvider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

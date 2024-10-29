@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../pages/ClothingList.dart';
 import '../pages/UserProfile.dart';
-import '../pages/Cart.dart';
+import '../pages/CartPage.dart';
 
 
 
@@ -49,7 +49,7 @@ class BottomNavBar extends StatelessWidget {
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Cart()),
+          MaterialPageRoute(builder: (context) => CartPage()),
         );
         break;
       case 2:

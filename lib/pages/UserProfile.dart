@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../provider/UserProvider.dart';
+import '../handlers/UserProvider.dart';
 import '../pages/LoginPage.dart';
 import 'package:flutter/services.dart';
 import '../components/navigationBar.dart';
+
 class UserProfile extends StatefulWidget {
   @override
   _UserProfileState createState() => _UserProfileState();
@@ -18,7 +19,9 @@ class _UserProfileState extends State<UserProfile> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
+  bool _obscurePassword = true;
   DateTime? _anniversaire;
 
   @override
@@ -28,6 +31,7 @@ class _UserProfileState extends State<UserProfile> {
     _addressController.text = userData?['adresse'] ?? "";
     _postalCodeController.text = (userData?['codePostal'] ?? 0).toString();
     _cityController.text = userData?['ville'] ?? "";
+    _passwordController.text = userData?['password'] ?? "";
     _anniversaire = userData?['anniversaire'] != null
         ? (userData?['anniversaire'] as Timestamp).toDate()
         : null;
@@ -45,9 +49,8 @@ class _UserProfileState extends State<UserProfile> {
     }
 
     // Convert _anniversaire to Timestamp if it's not null
-    final Timestamp? anniversaireTimestamp = _anniversaire != null
-        ? Timestamp.fromDate(_anniversaire!)
-        : null;
+    final Timestamp? anniversaireTimestamp =
+        _anniversaire != null ? Timestamp.fromDate(_anniversaire!) : null;
 
     // Prepare the updated data
     final updatedData = {
@@ -55,11 +58,15 @@ class _UserProfileState extends State<UserProfile> {
       'codePostal': int.tryParse(_postalCodeController.text.trim()) ?? 0,
       'ville': _cityController.text.trim(),
       'anniversaire': anniversaireTimestamp,
+      'password': _passwordController.text.trim(),
     };
 
     try {
       // Save to Firestore
-      await FirebaseFirestore.instance.collection('users').doc(userId).update(updatedData);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update(updatedData);
 
       // Update local user data in the provider
       userProvider.setUserData(userId, {
@@ -105,12 +112,12 @@ class _UserProfileState extends State<UserProfile> {
         title: Text("Mon profil"),
         actions: [
           TextButton(
-            onPressed: (){
- Provider.of<UserProvider>(context, listen: false).clearUserData();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
+            onPressed: () {
+              Provider.of<UserProvider>(context, listen: false).clearUserData();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
             },
             child: Text(
               "Se déconnecter",
@@ -131,14 +138,27 @@ class _UserProfileState extends State<UserProfile> {
               readOnly: true,
             ),
             const SizedBox(height: 16),
-            // Displaying Password field as read-only
+
+            // Editable Password field with obfuscation toggle
             TextFormField(
-              initialValue: userData?['password'] != null ? "********" : "N/A",
-              decoration: const InputDecoration(labelText: "Password"),
-              readOnly: true,
-              obscureText: true,
+              controller: _passwordController,
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                labelText: "Password",
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
             ),
             const SizedBox(height: 16),
+
             // Editable Birthday field with calendar picker
             GestureDetector(
               onTap: () => _selectDate(context),
@@ -151,12 +171,14 @@ class _UserProfileState extends State<UserProfile> {
               ),
             ),
             const SizedBox(height: 16),
+
             // Editable Address field
             TextFormField(
               controller: _addressController,
               decoration: const InputDecoration(labelText: "Adresse"),
             ),
             const SizedBox(height: 16),
+
             // Editable Code Postal field (digits only)
             TextFormField(
               controller: _postalCodeController,
@@ -165,22 +187,22 @@ class _UserProfileState extends State<UserProfile> {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             const SizedBox(height: 16),
+
             // Editable City field
             TextFormField(
               controller: _cityController,
               decoration: const InputDecoration(labelText: "Ville"),
             ),
             const SizedBox(height: 30),
-            // Log Out Button
+
+            // Save Changes Button
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  _saveChanges;
-                 
-                },
+                onPressed: _saveChanges,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: pinkColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
                 child: Text(
                   "Valider",
@@ -192,8 +214,9 @@ class _UserProfileState extends State<UserProfile> {
         ),
       ),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: 2, 
+        currentIndex: 2,
         onTap: (index) {
+          // Handle navigation between tabs here
         },
       ),
     );
