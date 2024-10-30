@@ -8,8 +8,6 @@ class ClothingItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color pinkColor = Color.fromARGB(255, 246, 144, 178);
-
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -45,17 +43,24 @@ class ClothingItemCard extends StatelessWidget {
                 children: [
                   Text(
                     clothingItem['title'],
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     "Size: ${clothingItem['size']}",
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     "${clothingItem['price'].toString()} MAD",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: pinkColor),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                   ),
                 ],
               ),

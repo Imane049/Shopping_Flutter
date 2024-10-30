@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../components/navigationBar.dart';
 import '../handlers/UserProvider.dart';
 import '../handlers/ClothingService.dart';
-import '../components/CartItem.dart'; 
+import '../components/CartItem.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -11,7 +11,6 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  final Color primaryColor = Color.fromARGB(255, 148, 92, 229);
   List<Map<String, dynamic>> cartItems = [];
   bool _isLoading = true;
 
@@ -92,18 +91,12 @@ class _CartPageState extends State<CartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: Text(
-          'Cart',
-          style: TextStyle(color: Colors.black),
+          "Cart",
+          style: Theme.of(context).textTheme.titleLarge,
         ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        elevation: 0,
         actions: [
           TextButton(
             onPressed: () {
@@ -114,7 +107,7 @@ class _CartPageState extends State<CartPage> {
             },
             child: Text(
               'Remove All',
-              style: TextStyle(color: primaryColor),
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
             ),
           ),
         ],
@@ -125,7 +118,7 @@ class _CartPageState extends State<CartPage> {
               ? Center(
                   child: Text(
                     "Your cart is empty.",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 )
               : Padding(
@@ -145,13 +138,12 @@ class _CartPageState extends State<CartPage> {
                           },
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
                       // Summary Section
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _buildSummaryRow('Total articles', _calculateSubtotal()),
                           Divider(),
                           _buildSummaryRow('Total', _calculateTotal(), isTotal: true),
                         ],
@@ -176,17 +168,15 @@ class _CartPageState extends State<CartPage> {
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                ),
           ),
           Text(
             '${value.toStringAsFixed(2)} MAD',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            ),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                ),
           ),
         ],
       ),

@@ -13,16 +13,16 @@ class ClothingDetailPage extends StatefulWidget {
 }
 
 class _ClothingDetailPageState extends State<ClothingDetailPage> {
-  final Color pinkColor = Color.fromARGB(255, 246, 144, 178);
-
   @override
   Widget build(BuildContext context) {
     final clothingItem = widget.clothingItem;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: pinkColor,
-        title: Text('Product Details'),
+        title: Text(
+          clothingItem['title'],
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -48,14 +48,14 @@ class _ClothingDetailPageState extends State<ClothingDetailPage> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Product Title
             Text(
               clothingItem['title'],
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             // Product Brand and Category
             Row(
@@ -63,41 +63,36 @@ class _ClothingDetailPageState extends State<ClothingDetailPage> {
               children: [
                 Text(
                   clothingItem['brand'],
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
                 ),
                 Text(
                   'Category: ${clothingItem['category'] ?? 'Unknown'}',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
                 ),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             // Product Price
             Text(
               '${clothingItem['price'].toString()} MAD',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: pinkColor),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-            // Size Selector
             Text(
               'Size',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
-            Row(
-              children: ['S', 'M', 'L', 'XL']
-                  .map((size) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: ChoiceChip(
-                          label: Text(size),
-                          selected: clothingItem['size'] == size,
-                        ),
-                      ))
-                  .toList(),
+            const SizedBox(height: 8),
+            Text(
+              clothingItem['size'],
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Add to Cart Button
             Center(
@@ -106,9 +101,8 @@ class _ClothingDetailPageState extends State<ClothingDetailPage> {
                   _addToCart(clothingItem['id']);
                 },
                 icon: Icon(Icons.shopping_cart),
-                label: Text('Add to Cart'),
+                label: Text('Ajouter au panier'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: pinkColor,
                   padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
               ),
@@ -119,51 +113,45 @@ class _ClothingDetailPageState extends State<ClothingDetailPage> {
     );
   }
 
-// Method to add item to cart in Firestore and update UserProvider
-Future<void> _addToCart(String itemId) async {
-  final userProvider = Provider.of<UserProvider>(context, listen: false);
-  final userId = userProvider.userData?['id']; // Get the ID from userData map
+  // Method to add item to cart in Firestore and update UserProvider
+  Future<void> _addToCart(String itemId) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userId = userProvider.userData?['id'];
 
-  if (userId == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error: User ID not found")),
-    );
-    return;
-  }
-
-  try {
-    // Fetch the user's current cart items from userProvider
-    List<dynamic> currentCart = userProvider.userData?['cart'] ?? [];
-
-    // Check if item is already in cart to prevent duplicates
-    if (!currentCart.contains(itemId)) {
-      currentCart.add(itemId);
-
-      // Save updated cart to Firestore and UserProvider
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'cart': currentCart,
-      });
-
-      // Update UserProvider
-      userProvider.saveUserData({'cart': currentCart});
-
+    if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Item added to cart: ${widget.clothingItem['title']}")),
+        SnackBar(content: Text("Error: User ID not found")),
       );
+      return;
+    }
 
-      // Debugging: Log the cart after addition
-      print('Cart updated successfully. Current cart items: $currentCart');
-    } else {
+    try {
+      List<dynamic> currentCart = userProvider.userData?['cart'] ?? [];
+
+      if (!currentCart.contains(itemId)) {
+        currentCart.add(itemId);
+
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'cart': currentCart,
+        });
+
+        userProvider.saveUserData({'cart': currentCart});
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Item added to cart: ${widget.clothingItem['title']}")),
+        );
+
+        print('Cart updated successfully. Current cart items: $currentCart');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Item is already in your cart.")),
+        );
+      }
+    } catch (e) {
+      print("Error adding item to cart: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Item is already in your cart.")),
+        SnackBar(content: Text("Failed to add item to cart: $e")),
       );
     }
-  } catch (e) {
-    print("Error adding item to cart: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Failed to add item to cart: $e")),
-    );
   }
-}
-
 }

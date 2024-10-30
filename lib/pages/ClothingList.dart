@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/navigationBar.dart';
-import '../components/clothingItem.dart'; // Import the ClothingItemCard component
+import '../components/clothingItem.dart';
 import '../handlers/ClothingService.dart';
 
 class ClothingList extends StatefulWidget {
@@ -9,10 +9,7 @@ class ClothingList extends StatefulWidget {
 }
 
 class _ClothingListState extends State<ClothingList> {
-  final Color pinkColor = Color.fromARGB(255, 246, 144, 178);
   String selectedBrand = "All Brands"; // Default selection for the dropdown
-  List<String> brands = ["All Brands", "Nike", "Adidas", "Puma", "Bata", "Wilson"]; // Example brands
-
   final List<Map<String, dynamic>> clothingItems = []; // List to store fetched items
   bool _isLoading = true; // To track loading state
 
@@ -42,24 +39,12 @@ class _ClothingListState extends State<ClothingList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: pinkColor,
-        title: Text("Popular Products"),
-        actions: [
-          DropdownButton<String>(
-            value: selectedBrand,
-            items: brands.map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedBrand = newValue!;
-              });
-            },
-          ),
-        ],
+        backgroundColor: Theme.of(context).colorScheme.background,
+        elevation: 0,
+        title: Text(
+          'Clothing List',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -88,6 +73,7 @@ class _ClothingListState extends State<ClothingList> {
       bottomNavigationBar: BottomNavBar(
         currentIndex: 0,
         onTap: (index) {
+          // Handle navigation between tabs here
         },
       ),
     );

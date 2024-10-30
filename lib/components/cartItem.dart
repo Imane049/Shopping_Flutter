@@ -11,8 +11,6 @@ class CartItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = Color.fromARGB(255, 148, 92, 229);
-
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -35,7 +33,7 @@ class CartItemCard extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             // Product Details
             Expanded(
               child: Column(
@@ -43,33 +41,34 @@ class CartItemCard extends StatelessWidget {
                 children: [
                   Text(
                     item['title'],
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Size: ${item['size']}',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     '${item['price'].toString()} MAD',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                   ),
                 ],
               ),
             ),
             // Remove Item Control (X Icon)
             IconButton(
-              icon: Icon(Icons.close, color: primaryColor),
+              icon: Icon(
+                Icons.close,
+                color: Theme.of(context).colorScheme.error,
+              ),
               onPressed: onRemoved, // Calls the onRemoved function passed from the parent
             ),
           ],

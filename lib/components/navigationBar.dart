@@ -3,8 +3,6 @@ import '../pages/ClothingList.dart';
 import '../pages/UserProfile.dart';
 import '../pages/CartPage.dart';
 
-
-
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -29,7 +27,8 @@ class BottomNavBar extends StatelessWidget {
         ),
       ],
       currentIndex: currentIndex,
-      selectedItemColor: Colors.orange,
+      selectedItemColor: Theme.of(context).colorScheme.primary,
+      unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
       onTap: (index) {
         onTap(index);
         _navigateToPage(context, index);

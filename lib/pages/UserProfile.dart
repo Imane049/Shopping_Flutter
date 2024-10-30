@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart'; // Added import for DateFormat
 import '../handlers/UserProvider.dart';
 import '../pages/LoginPage.dart';
 import '../pages/AddClothingItem.dart';
@@ -14,8 +14,6 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  final Color pinkColor = Color.fromARGB(255, 246, 144, 178);
-
   // Controllers for editable fields
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _postalCodeController = TextEditingController();
@@ -24,7 +22,6 @@ class _UserProfileState extends State<UserProfile> {
 
   bool _obscurePassword = true;
   DateTime? _anniversaire;
-
 
   @override
   void initState() {
@@ -110,8 +107,11 @@ class _UserProfileState extends State<UserProfile> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: pinkColor,
-        title: Text("Mon profil"),
+        title: Text(
+          "Mon profil",
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        centerTitle: true,
         actions: [
           TextButton(
             onPressed: () {
@@ -123,7 +123,9 @@ class _UserProfileState extends State<UserProfile> {
             },
             child: Text(
               "Se déconnecter",
-              style: TextStyle(color: Colors.white),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge
             ),
           ),
         ],
@@ -136,7 +138,10 @@ class _UserProfileState extends State<UserProfile> {
             // Displaying Login field as read-only
             TextFormField(
               initialValue: userData?['username'] ?? "N/A",
-              decoration: const InputDecoration(labelText: "Login"),
+              decoration: InputDecoration(
+                labelText: "Login",
+                labelStyle: Theme.of(context).textTheme.bodyMedium,
+              ),
               readOnly: true,
             ),
             const SizedBox(height: 16),
@@ -147,6 +152,7 @@ class _UserProfileState extends State<UserProfile> {
               obscureText: _obscurePassword,
               decoration: InputDecoration(
                 labelText: "Password",
+                labelStyle: Theme.of(context).textTheme.bodyMedium,
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -166,7 +172,10 @@ class _UserProfileState extends State<UserProfile> {
               onTap: () => _selectDate(context),
               child: AbsorbPointer(
                 child: TextFormField(
-                  decoration: const InputDecoration(labelText: "Anniversaire"),
+                  decoration: InputDecoration(
+                    labelText: "Anniversaire",
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   controller: TextEditingController(text: formattedAnniversaire),
                   readOnly: true,
                 ),
@@ -177,14 +186,20 @@ class _UserProfileState extends State<UserProfile> {
             // Editable Address field
             TextFormField(
               controller: _addressController,
-              decoration: const InputDecoration(labelText: "Adresse"),
+              decoration: InputDecoration(
+                labelText: "Adresse",
+                labelStyle: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
             const SizedBox(height: 16),
 
             // Editable Code Postal field (digits only)
             TextFormField(
               controller: _postalCodeController,
-              decoration: const InputDecoration(labelText: "Code Postal"),
+              decoration: InputDecoration(
+                labelText: "Code Postal",
+                labelStyle: Theme.of(context).textTheme.bodyMedium,
+              ),
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
@@ -193,7 +208,10 @@ class _UserProfileState extends State<UserProfile> {
             // Editable City field
             TextFormField(
               controller: _cityController,
-              decoration: const InputDecoration(labelText: "Ville"),
+              decoration: InputDecoration(
+                labelText: "Ville",
+                labelStyle: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
             const SizedBox(height: 30),
 
@@ -202,13 +220,13 @@ class _UserProfileState extends State<UserProfile> {
               child: ElevatedButton(
                 onPressed: _saveChanges,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: pinkColor,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
                 child: Text(
                   "Valider",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge
                 ),
               ),
             ),
@@ -217,23 +235,17 @@ class _UserProfileState extends State<UserProfile> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          setState(() {
-           
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddClothingItem()),
-              );
-            
-          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddClothingItem()),
+          );
         },
-        backgroundColor: pinkColor,
-        label: Text( 'Add Clothing Item' ),
-        icon: Icon(Icons.add) ,
+        label: Text('Ajouter un vêtement'),
+        icon: Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: 2,
-        onTap: (index) {
-        },
+        onTap: (index) {},
       ),
     );
   }

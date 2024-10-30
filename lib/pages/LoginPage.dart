@@ -31,13 +31,11 @@ class _LoginPageState extends State<LoginPage> {
       if (snapshot.docs.isNotEmpty) {
         var userDoc = snapshot.docs.first;
         var userId = userDoc.id;
-        var userData = userDoc.data() as Map<String, dynamic>; 
+        var userData = userDoc.data() as Map<String, dynamic>;
         if (userDoc['password'] == password) {
           Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
- 
-
-Provider.of<UserProvider>(context, listen: false).setUserData(userId, userData);
+          Provider.of<UserProvider>(context, listen: false).setUserData(userId, userData);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => ClothingList()),
@@ -46,29 +44,30 @@ Provider.of<UserProvider>(context, listen: false).setUserData(userId, userData);
           _showErrorDialog("Incorrect password! Retry again");
         }
       } else {
-        _showErrorDialog("UserNotFound! Retry again");
+        _showErrorDialog("User not found! Retry again");
       }
     } catch (e) {
       print("Error fetching user document: $e");
     }
   }
+
   void _showErrorDialog(String message) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text("Error"),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text("OK"),
-        ),
-      ],
-    ),
-  );
-}
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Error"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> _printAllUsernames() async {
     try {
@@ -84,62 +83,58 @@ Provider.of<UserProvider>(context, listen: false).setUserData(userId, userData);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      appBar: AppBar(
+        title: Text("MIAGED", style: Theme.of(context).textTheme.headlineSmall),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        centerTitle: true,
+      ),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             children: [
-              // Full-width banner
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                decoration: BoxDecoration(
-                  color:  const Color.fromARGB(255, 250, 194, 213),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Clothing Store',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
               const SizedBox(height: 30), // Moderate gap between banner and form
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Username TextField
-                    TextField(
+                    // Username TextField with label on top
+                    TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: const TextStyle(color: Color.fromARGB(255, 246, 144, 178)),
+                        labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surface,
                       ),
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     const SizedBox(height: 20),
-                    // Password TextField
-                    TextField(
+                    // Password TextField with label on top
+                    TextFormField(
                       controller: _passwordController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        labelStyle: const TextStyle(color: Color.fromARGB(255, 246, 144, 178)),
+                        labelStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surface,
                       ),
+                      style: Theme.of(context).textTheme.bodyLarge,
                       obscureText: true,
                     ),
                     const SizedBox(height: 30),
@@ -150,18 +145,16 @@ Provider.of<UserProvider>(context, listen: false).setUserData(userId, userData);
                       child: ElevatedButton(
                         onPressed: _login,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 246, 144, 178),
+                          backgroundColor: Theme.of(context).colorScheme.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                        child: Text(
+                          'Se connecter',
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
                         ),
                       ),
                     ),
