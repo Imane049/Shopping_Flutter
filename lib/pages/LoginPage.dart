@@ -100,7 +100,7 @@ Provider.of<UserProvider>(context, listen: false).setUserData(userId, userData);
                 ),
                 child: const Center(
                   child: Text(
-                    'Login',
+                    'Clothing Store',
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,

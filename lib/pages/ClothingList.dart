@@ -88,7 +88,6 @@ class _ClothingListState extends State<ClothingList> {
       bottomNavigationBar: BottomNavBar(
         currentIndex: 0,
         onTap: (index) {
-          // Handle navigation between tabs here
         },
       ),
     );

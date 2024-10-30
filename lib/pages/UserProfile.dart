@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../handlers/UserProvider.dart';
 import '../pages/LoginPage.dart';
+import '../pages/AddClothingItem.dart';
 import 'package:flutter/services.dart';
 import '../components/navigationBar.dart';
 
@@ -23,6 +24,7 @@ class _UserProfileState extends State<UserProfile> {
 
   bool _obscurePassword = true;
   DateTime? _anniversaire;
+
 
   @override
   void initState() {
@@ -213,10 +215,24 @@ class _UserProfileState extends State<UserProfile> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          setState(() {
+           
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddClothingItem()),
+              );
+            
+          });
+        },
+        backgroundColor: pinkColor,
+        label: Text( 'Add Clothing Item' ),
+        icon: Icon(Icons.add) ,
+      ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: 2,
         onTap: (index) {
-          // Handle navigation between tabs here
         },
       ),
     );
