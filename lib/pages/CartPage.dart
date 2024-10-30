@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../components/navigationBar.dart';
 import '../handlers/UserProvider.dart';
 import '../handlers/ClothingService.dart';
+import '../components/CartItem.dart'; 
 
 class CartPage extends StatefulWidget {
   @override
@@ -12,7 +13,6 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   final Color primaryColor = Color.fromARGB(255, 148, 92, 229);
   List<Map<String, dynamic>> cartItems = [];
-  double tax = 0.0;
   bool _isLoading = true;
 
   @override
@@ -40,7 +40,6 @@ class _CartPageState extends State<CartPage> {
     try {
       List<Map<String, dynamic>> fetchedItems = [];
       for (String itemId in cartIds) {
-        // Fetch the item by its ID using ClothingService
         Map<String, dynamic>? item = await clothingService.fetchClothingItemById(itemId);
         if (item != null) {
           fetchedItems.add({
@@ -48,7 +47,6 @@ class _CartPageState extends State<CartPage> {
             'quantity': 1, // Assuming a default quantity for now
           });
 
-          // Debugging: Log the fetched item details
           print('Fetched item details: ${item.toString()}');
         } else {
           print("Item with ID $itemId not found in database.");
@@ -60,7 +58,6 @@ class _CartPageState extends State<CartPage> {
         _isLoading = false;
       });
 
-      // Debugging: Log the total number of items fetched
       print('Total cart items fetched: ${cartItems.length}');
     } catch (e) {
       print("Error fetching cart items: $e");
@@ -70,26 +67,15 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  void _incrementQuantity(int index) {
+  void _removeItemFromCart(String itemId) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     setState(() {
-      cartItems[index]['quantity']++;
+      cartItems.removeWhere((item) => item['id'] == itemId);
     });
-  }
 
-  void _decrementQuantity(int index) {
-    if (cartItems[index]['quantity'] > 1) {
-      setState(() {
-        cartItems[index]['quantity']--;
-      });
-    }
-  }
-
-  void _removeAllItems() {
-    setState(() {
-      cartItems.clear();
-      // Update cart in user provider as well
-      Provider.of<UserProvider>(context, listen: false).saveUserData({'cart': []});
-    });
+    List<dynamic> updatedCart = userProvider.userData?['cart'] ?? [];
+    updatedCart.remove(itemId);
+    userProvider.saveUserData({'cart': updatedCart});
   }
 
   double _calculateSubtotal() {
@@ -99,7 +85,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   double _calculateTotal() {
-    return _calculateSubtotal() ;
+    return _calculateSubtotal();
   }
 
   @override
@@ -120,7 +106,12 @@ class _CartPageState extends State<CartPage> {
         ),
         actions: [
           TextButton(
-            onPressed: _removeAllItems,
+            onPressed: () {
+              setState(() {
+                cartItems.clear();
+                Provider.of<UserProvider>(context, listen: false).saveUserData({'cart': []});
+              });
+            },
             child: Text(
               'Remove All',
               style: TextStyle(color: primaryColor),
@@ -147,80 +138,9 @@ class _CartPageState extends State<CartPage> {
                           itemCount: cartItems.length,
                           itemBuilder: (context, index) {
                             final item = cartItems[index];
-                            return Card(
-                              elevation: 2,
-                              margin: const EdgeInsets.symmetric(vertical: 8.0),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    // Product Image
-                                    Container(
-                                      width: 80,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        image: DecorationImage(
-                                          image: NetworkImage(item['imagePath']),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 16),
-                                    // Product Details
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            item['title'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          Text(
-                                            'Size: ${item['size']}',
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          Text(
-                                            '${item['price'].toString()} MAD',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    // Quantity Controls
-                                    Column(
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(Icons.add, color: primaryColor),
-                                          onPressed: () => _incrementQuantity(index),
-                                        ),
-                                        Text(
-                                          '${item['quantity']}',
-                                          style: TextStyle(fontSize: 16),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(Icons.remove, color: primaryColor),
-                                          onPressed: () => _decrementQuantity(index),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            return CartItemCard(
+                              item: item,
+                              onRemoved: () => _removeItemFromCart(item['id']),
                             );
                           },
                         ),
@@ -240,9 +160,9 @@ class _CartPageState extends State<CartPage> {
                   ),
                 ),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: 1, // Set to 1 for Cart tab
+        currentIndex: 1,
         onTap: (index) {
-          // Optional: Handle other logic if needed
+          // Handle navigation between tabs here
         },
       ),
     );
