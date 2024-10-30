@@ -12,7 +12,6 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   final Color primaryColor = Color.fromARGB(255, 148, 92, 229);
   List<Map<String, dynamic>> cartItems = [];
-  double shippingCost = 8.00;
   double tax = 0.0;
   bool _isLoading = true;
 
@@ -100,7 +99,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   double _calculateTotal() {
-    return _calculateSubtotal() + shippingCost + tax;
+    return _calculateSubtotal() ;
   }
 
   @override
@@ -232,9 +231,7 @@ class _CartPageState extends State<CartPage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _buildSummaryRow('Subtotal', _calculateSubtotal()),
-                          _buildSummaryRow('Shipping Cost', shippingCost),
-                          _buildSummaryRow('Tax', tax),
+                          _buildSummaryRow('Total articles', _calculateSubtotal()),
                           Divider(),
                           _buildSummaryRow('Total', _calculateTotal(), isTotal: true),
                         ],

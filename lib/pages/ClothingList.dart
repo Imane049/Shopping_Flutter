@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/navigationBar.dart';
-import '../pages/ClothingDetailPage.dart';
+import '../components/clothingItem.dart'; // Import the ClothingItemCard component
 import '../handlers/ClothingService.dart';
 
 class ClothingList extends StatefulWidget {
@@ -81,60 +81,7 @@ class _ClothingListState extends State<ClothingList> {
                     return Container(); // Skip items not matching the selected brand
                   }
 
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ClothingDetailPage(clothingItem: clothingItem),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      elevation: 5,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-                                image: DecorationImage(
-                                  image: NetworkImage(clothingItem['imagePath']),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  clothingItem['title'],
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  "Size: ${clothingItem['size']}",
-                                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  "${clothingItem['price'].toString()} MAD",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: pinkColor),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                  return ClothingItemCard(clothingItem: clothingItem);
                 },
               ),
             ),

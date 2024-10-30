@@ -119,50 +119,51 @@ class _ClothingDetailPageState extends State<ClothingDetailPage> {
     );
   }
 
-  // Method to add item to cart in Firestore and update UserProvider
-  Future<void> _addToCart(String itemId) async {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final userId = userProvider.userId;
+// Method to add item to cart in Firestore and update UserProvider
+Future<void> _addToCart(String itemId) async {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+  final userId = userProvider.userData?['id']; // Get the ID from userData map
 
-    if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: User ID not found")),
-      );
-      return;
-    }
-
-    try {
-      // Fetch the user's current cart items from userProvider
-      List<dynamic> currentCart = userProvider.userData?['cart'] ?? [];
-
-      // Check if item is already in cart to prevent duplicates
-      if (!currentCart.contains(itemId)) {
-        currentCart.add(itemId);
-
-        // Save updated cart to Firestore and UserProvider
-        await FirebaseFirestore.instance.collection('users').doc(userId).update({
-          'cart': currentCart,
-        });
-
-        // Update UserProvider
-        userProvider.saveUserData({'cart': currentCart});
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Item added to cart: ${widget.clothingItem['title']}")),
-        );
-
-        // Debugging: Log the cart after addition
-        print('Cart updated successfully. Current cart items: $currentCart');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Item is already in your cart.")),
-        );
-      }
-    } catch (e) {
-      print("Error adding item to cart: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to add item to cart: $e")),
-      );
-    }
+  if (userId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error: User ID not found")),
+    );
+    return;
   }
+
+  try {
+    // Fetch the user's current cart items from userProvider
+    List<dynamic> currentCart = userProvider.userData?['cart'] ?? [];
+
+    // Check if item is already in cart to prevent duplicates
+    if (!currentCart.contains(itemId)) {
+      currentCart.add(itemId);
+
+      // Save updated cart to Firestore and UserProvider
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'cart': currentCart,
+      });
+
+      // Update UserProvider
+      userProvider.saveUserData({'cart': currentCart});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Item added to cart: ${widget.clothingItem['title']}")),
+      );
+
+      // Debugging: Log the cart after addition
+      print('Cart updated successfully. Current cart items: $currentCart');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Item is already in your cart.")),
+      );
+    }
+  } catch (e) {
+    print("Error adding item to cart: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Failed to add item to cart: $e")),
+    );
+  }
+}
+
 }
