@@ -6,7 +6,6 @@ import '../pages/CartPage.dart';
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
-
   const BottomNavBar({super.key, required this.currentIndex, required this.onTap});
 
   @override

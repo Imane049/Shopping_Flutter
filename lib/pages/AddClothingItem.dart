@@ -24,36 +24,41 @@ class _AddClothingItemState extends State<AddClothingItem> {
   final ImagePicker _picker = ImagePicker(); // Image picker instance
   String? _imageUrl; // Hidden field for storing image URL
 
-Future<void> _pickImage() async {
-  try {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
+  Future<void> _pickImage() async {
+    try {
+      print("Picking image from gallery...");
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() {
+          _selectedImage = File(image.path);
+        });
+        print("Image selected: ${image.path}");
 
-      // Use await to get the result from the async function
-      String category = await clothingItemCategory(_selectedImage!);
-      print("Category: $category");
+        // Use await to get the result from the async function
+        print("Calling clothingItemCategory function...");
+        clothingItemCategory(_selectedImage!);
 
-      // Upload the image to Firebase Storage
-      String imageUrl = await _uploadImageToFirebase(_selectedImage!);
-      
-      // Store the image URL in the hidden field
-      setState(() {
-        _imageUrl = imageUrl;
-      });
+        // Upload the image to Firebase Storage
+        print("Uploading image to Firebase...");
+        String imageUrl = await _uploadImageToFirebase(_selectedImage!);
+        print("Image uploaded successfully. URL: $imageUrl");
+        
+        // Store the image URL in the hidden field
+        setState(() {
+          _imageUrl = imageUrl;
+        });
 
-      // Log for debugging
-      print("Image uploaded successfully. URL: $imageUrl");
+      } else {
+        print("No image selected.");
+      }
+    } catch (e) {
+      print("Error picking image: $e");
     }
-  } catch (e) {
-    print("Error picking image: $e");
   }
-}
 
   Future<String> _uploadImageToFirebase(File image) async {
     try {
+      print("Getting file name...");
       // Get the file name
       String fileName = path.basename(image.path);
       // Reference to the Firebase Storage bucket
@@ -62,9 +67,11 @@ Future<void> _pickImage() async {
       // Upload the image to the reference
       UploadTask uploadTask = storageReference.putFile(image);
       // Wait for the upload to complete
+      print("Uploading file...");
       TaskSnapshot snapshot = await uploadTask;
       // Get the image download URL
       String downloadUrl = await snapshot.ref.getDownloadURL();
+      print("Image URL obtained: $downloadUrl");
       return downloadUrl;
     } catch (e) {
       print("Error uploading image to Firebase: $e");
